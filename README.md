@@ -51,7 +51,7 @@ All registers and whole memory is zero-initialized (and stack is empty-initializ
   in register `2`.
 * `neg reg0 reg1` - Negates value in register `reg0` and stores result in
   `reg1`
-* `mul reg0 reg1 reg1` and `rev reg0 reg1` - Analogous of `add` and `neg`:
+* `mul reg0 reg1 reg2` and `rev reg0 reg1` - Analogous of `add` and `neg`:
   multiplication of two numbers, and inversion of a number
 * `lea reg0 imm reg1 reg2` - Calculates `reg0 + imm * reg1` and stores
   the result in `reg2`.
