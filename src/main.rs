@@ -1,11 +1,3 @@
-// Single responsibility rule
-
-// Result
-// enum Result<T, E> {
-//   Err(E),
-//   Ok(T)
-// }
-
 #[derive(Debug, PartialEq)]
 enum Mnemonic {
     Load,
@@ -91,13 +83,4 @@ mod tests {
       args: vec![1, 2],
     });
   }
-
-  // PartialEq: a == b
-  // Eq:
-  // * a == a
-  // * a == b
-  // * a == b <=> b == a
-  // * a == b and b == c <=> a == c
-
-  // NaN != NaN
 }
