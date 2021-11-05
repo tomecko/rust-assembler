@@ -35,8 +35,6 @@ struct Command {
   args: Vec<i64>,
 }
 
-// std::num::ParseIntError
-
 impl Command {
   fn parse(val: &str) -> Result<Self, String> {
     let mut split_val = val.split_whitespace(); // `impl Iterator<Item = &str>`
@@ -55,6 +53,8 @@ impl Command {
   }
 }
 
+
+
 fn main() {
     println!("{:?}", Command::parse("load 1 2"));
     println!("{:?}", Command::parse("read 1 2"));
@@ -66,21 +66,35 @@ fn main() {
 mod tests {
   use super::*;
   
-  #[test]
-  fn empty_line() {
-    Command::parse("").unwrap_err();
+  mod general {
+    use super::*;
+    
+    #[test]
+    fn empty_line() {
+      Command::parse("").unwrap_err();
+    }
+
+    #[test]
+    fn unknown_mnemonic() {
+      Command::parse("abc_unknown 1 2").unwrap_err();
+    }
+
+    #[test]
+    fn invalid_args() {
+      Command::parse("load a b").unwrap_err();
+    }
   }
 
-  #[test]
-  fn unknown_mnemonic() {
-    Command::parse("abc_unknown 1 2").unwrap_err();
+  mod load {
+    use super::*;
+
+    #[test]
+    fn load() {
+      assert_eq!(Command::parse("load 1 2").unwrap(), Command {
+        mnemonic: Mnemonic::Load,
+        args: vec![1, 2],
+      });
+    }
   }
 
-  #[test]
-  fn load() {
-    assert_eq!(Command::parse("load 1 2").unwrap(), Command {
-      mnemonic: Mnemonic::Load,
-      args: vec![1, 2],
-    });
-  }
 }
