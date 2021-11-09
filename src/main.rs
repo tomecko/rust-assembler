@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug, PartialEq)]
 enum Mnemonic {
     Load,
@@ -54,12 +56,63 @@ impl Command {
 }
 
 
+trait Register {
+  fn read(&self) -> i64;
+  fn write(&mut self, val: i64);
+}
+
+struct GeneralPurposeRegister {
+  value: i64,
+}
+
+impl Register for GeneralPurposeRegister {
+  fn read(&self) -> i64 {
+    self.value
+  }
+  fn write(&mut self, val: i64) {
+    self.value = val;
+  }
+}
+
+struct ProgramCounter {
+  value: i64,
+}
+
+impl Register for ProgramCounter {
+  fn read(&self) -> i64 {
+    todo!()
+  }
+  fn write(&mut self, val: i64) {
+    println!("{}", val);
+    todo!()
+  }
+}
+
+fn get_register(n: i64) -> Result<impl Register, String> {
+  let registers: HashMap<i64, _> = HashMap::new();
+  if let Some(existingRegister) = registers.get(&n) {
+    Ok(existingRegister)
+  } else {
+    let newRegister = match n {
+      0..=13 => Some(GeneralPurposeRegister { value: n }),
+      _ => None
+    };
+    if let Some(register) = newRegister {
+      registers.insert(n, register);
+      Ok(&register)
+    } else {
+      Err(format!("unable to get register for n = {}", n))
+    }
+  }
+}
 
 fn main() {
-    println!("{:?}", Command::parse("load 1 2"));
-    println!("{:?}", Command::parse("read 1 2"));
-    println!("{:?}", Command::parse(""));
-    println!("{:?}", Command::parse("load foo bar"));
+  println!("{:?}", Command::parse("load 1 2"));
+  println!("{:?}", Command::parse("read 1 2"));
+  println!("{:?}", Command::parse(""));
+  println!("{:?}", Command::parse("load foo bar"));
+
+  get_register(1);
 }
 
 #[cfg(test)]
@@ -68,7 +121,7 @@ mod tests {
   
   mod general {
     use super::*;
-    
+
     #[test]
     fn empty_line() {
       Command::parse("").unwrap_err();
