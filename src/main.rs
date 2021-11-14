@@ -106,19 +106,24 @@ fn get_register(n: i64) -> Result<impl Register, String> {
   }
 }
 
+fn execute_command(command: Command) {
+  match command {
+    Command { mnemonic: Mnemonic::Load , args } => get_register(args[1]).write(args[0),
+    // TODO
+  }
+}
+
 fn main() {
   println!("{:?}", Command::parse("load 1 2"));
   println!("{:?}", Command::parse("read 1 2"));
   println!("{:?}", Command::parse(""));
   println!("{:?}", Command::parse("load foo bar"));
-
-  get_register(1);
 }
 
 #[cfg(test)]
 mod tests {
   use super::*;
-  
+
   mod general {
     use super::*;
 
@@ -142,11 +147,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn load() {
+    fn load_command() {
       assert_eq!(Command::parse("load 1 2").unwrap(), Command {
         mnemonic: Mnemonic::Load,
         args: vec![1, 2],
       });
+    }
+
+    #[test]
+    fn load_register() {
+      execute(Command::parse("load 1 2"));
+      assert_eq!(get_register(2).read(), 1);
     }
   }
 
