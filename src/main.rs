@@ -1,13 +1,12 @@
-use std::collections::HashMap;
+// use std::collections::HashMap;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 enum Mnemonic {
     Load,
     Mov,
     Add,
     Neg,
     Mul,
-    Rev,
     Lea,
     Movgz,
     Movz,
@@ -16,13 +15,12 @@ enum Mnemonic {
 impl Mnemonic {
   fn parse(val: &str) -> Result<Self, String> {
      let res = match val.to_lowercase().as_str() {
-       "load" =>Mnemonic::Load,
+       "load" => Mnemonic::Load,
        "mov" => Mnemonic::Mov,
        "add" => Mnemonic::Add,
        "neg" => Mnemonic::Neg,
        "mul" => Mnemonic::Mul,
        "lea" => Mnemonic::Lea,
-       "rev" => Mnemonic::Rev,
        "movgz" => Mnemonic::Movgz,
        "movz" => Mnemonic::Movz,
        _ => return Err(format!("unknown mnemonic {} :(", val)),
@@ -31,7 +29,7 @@ impl Mnemonic {
   }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 struct Command {
   mnemonic: Mnemonic,
   args: Vec<i64>,
@@ -55,12 +53,83 @@ impl Command {
   }
 }
 
+#[derive(Clone, Copy)]
+struct RegisterIndex(usize);
+
+impl RegisterIndex {
+  fn validate(value: i64) -> Result<RegisterIndex, String> {
+    match value {
+      0..=23 => Ok(RegisterIndex(value as _)),
+      _ => Err(format!("value {} outside supported scope of register index", value)),
+    }
+  }
+
+  fn value(self) -> usize {
+    self.0
+  }
+}
+
+enum Operation {
+  Load(i64, RegisterIndex),
+  Mov(RegisterIndex, RegisterIndex),
+  Add(RegisterIndex, RegisterIndex, RegisterIndex),
+  Neg(RegisterIndex, RegisterIndex),
+  Mul(RegisterIndex, RegisterIndex, RegisterIndex),
+  Lea(RegisterIndex, i64, RegisterIndex, RegisterIndex),
+  Movgz(RegisterIndex, RegisterIndex, RegisterIndex),
+  Movz(RegisterIndex, RegisterIndex, RegisterIndex),
+}
+
+impl Operation {
+  fn validate(command: Command) -> Result<Self, String> {
+    let Command { mnemonic, args } = command;
+    
+    match mnemonic {
+      Mnemonic::Load => {
+        Self::check_args_size(&args, 2)?;
+        Ok(
+          Self::Load(args[0],
+          RegisterIndex::validate(args[1])?)
+        )
+      }
+      Mnemonic::Mov => {
+        Self::check_args_size(&args, 2)?;
+        Ok(Self::Mov(
+          RegisterIndex::validate(args[0])?,
+          RegisterIndex::validate(args[1])?,
+        ))
+      }
+      _ => todo!(),
+    }
+  }
+
+  fn execute(&self, machine: &mut Machine) {
+    use Operation::*;
+
+    match self {
+      Load(imm, reg) => machine.registers[reg.value()].write(*imm),
+      Mov(from_reg, to_reg) =>
+        machine.registers[to_reg.value()].write(machine.registers[from_reg.value()].read()),
+      _ => todo!(),
+      // TODO
+    }
+  }
+
+  fn check_args_size(args: &[i64], expected: usize) -> Result<(), String> {
+    if args.len() == expected {
+      Ok(())
+    } else {
+      Err(format!("wrong number of arguments {}, expected: {}", args.len(), expected))
+    }
+  }
+}
 
 trait Register {
   fn read(&self) -> i64;
   fn write(&mut self, val: i64);
 }
 
+#[derive(Clone, Copy)]
 struct GeneralPurposeRegister {
   value: i64,
 }
@@ -88,7 +157,7 @@ impl Register for ProgramCounter {
   }
 }
 
-fn get_register(n: i64) -> Result<impl Register, String> {
+/* fn get_register(n: i64) -> Result<impl Register, String> {
   let registers: HashMap<i64, _> = HashMap::new();
   if let Some(existingRegister) = registers.get(&n) {
     Ok(existingRegister)
@@ -104,12 +173,45 @@ fn get_register(n: i64) -> Result<impl Register, String> {
       Err(format!("unable to get register for n = {}", n))
     }
   }
+} */
+
+struct Machine {
+  registers: [Box<dyn Register>; 14],
+}
+
+impl Machine {
+  fn new() -> Self {
+    Machine {
+      registers: [
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+        Box::new(GeneralPurposeRegister { value: 0 }),
+      ]
+    }
+  }
+
+  fn execute(commands: Vec<Command>) {
+    for command in commands {
+      
+    }
+  }
 }
 
 fn execute_command(command: Command) {
   match command {
-    Command { mnemonic: Mnemonic::Load , args } => get_register(args[1]).write(args[0),
-    // TODO
+//    Command { mnemonic: Mnemonic::Load , args } => get_register(args[1]).write(args[0]),
+    _ => todo!(),
   }
 }
 
