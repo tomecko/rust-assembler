@@ -2,8 +2,8 @@ use crate::mnemonic::Mnemonic;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Command {
-    mnemonic: Mnemonic,
-    args: Vec<i64>,
+    pub mnemonic: Mnemonic,
+    pub args: Vec<i64>,
 }
 
 impl Command {
@@ -15,5 +15,44 @@ impl Command {
             .collect::<Result<_, _>>()?;
 
         Ok(Self { mnemonic, args })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    mod general {
+        use super::*;
+
+        #[test]
+        fn empty_line() {
+            Command::parse("").unwrap_err();
+        }
+
+        #[test]
+        fn unknown_mnemonic() {
+            Command::parse("abc_unknown 1 2").unwrap_err();
+        }
+
+        #[test]
+        fn invalid_args() {
+            Command::parse("load a b").unwrap_err();
+        }
+    }
+
+    mod load {
+        use super::*;
+
+        #[test]
+        fn load_command() {
+            assert_eq!(
+                Command::parse("load 1 2").unwrap(),
+                Command {
+                    mnemonic: Mnemonic::Load,
+                    args: vec![1, 2],
+                }
+            );
+        }
     }
 }
