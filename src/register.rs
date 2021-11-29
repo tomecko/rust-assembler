@@ -1,29 +1,29 @@
 #[derive(Clone, Copy)]
-struct RegisterIndex(usize);
+pub struct RegisterIndex(usize);
 
 impl RegisterIndex {
-    fn validate(value: i64) -> Result<RegisterIndex, String> {
+    pub fn validate(value: i64) -> Result<RegisterIndex, String> {
         match value {
             0..=23 => Ok(RegisterIndex(value as _)),
             _ => Err(format!("invalue register index: {}", value)),
         }
     }
 
-    fn value(self) -> usize {
+    pub fn value(self) -> usize {
         self.0
     }
 }
 
 
 
-trait Register {
+pub trait Register {
     fn read(&self) -> i64;
     fn write(&mut self, val: i64);
 }
 
 #[derive(Clone, Copy)]
-struct GeneralPurposeRegister {
-    value: i64,
+pub struct GeneralPurposeRegister {
+    pub value: i64,
 }
 
 impl Register for GeneralPurposeRegister {
@@ -35,7 +35,8 @@ impl Register for GeneralPurposeRegister {
     }
 }
 
-struct ProgramCounter {
+
+pub struct ProgramCounter {
     value: i64,
 }
 

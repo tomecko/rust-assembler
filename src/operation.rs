@@ -1,3 +1,8 @@
+use crate::command::Command;
+use crate::machine::Machine;
+use crate::mnemonic::Mnemonic;
+use crate::register::RegisterIndex;
+
 pub enum Operation {
     Load(i64, RegisterIndex),
     Mov(RegisterIndex, RegisterIndex),

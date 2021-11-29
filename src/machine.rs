@@ -1,5 +1,10 @@
+use crate::command::Command;
+use crate::operation::Operation;
+use crate::register::{Register,GeneralPurposeRegister};
+
+
 pub struct Machine {
-    registers: [Box<dyn Register>; 14],
+    pub registers: [Box<dyn Register>; 14],
 }
 
 impl Machine {
@@ -25,7 +30,15 @@ impl Machine {
     }
 
     pub fn execute(commands: Vec<Command>) {
-        for command in commands {}
+        // Vec<Command> -> Vec<Operation>
+
+        // iter: impl Iterator<Item = Result<Operation, String>>
+        let _iter: Result<Vec<Operation>, String> = commands
+            .into_iter()
+            .map(|c| Operation::validate(c))
+            .collect();
+
+        todo!()
     }
 }
 

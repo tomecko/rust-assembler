@@ -1,5 +1,10 @@
+#![allow(dead_code)]
+
 mod command;
+mod operation;
+mod machine;
 mod mnemonic;
+mod register;
 
 use command::Command;
 
