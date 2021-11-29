@@ -2,6 +2,7 @@
 pub struct RegisterIndex(usize);
 
 impl RegisterIndex {
+    // this fn can't be const function
     pub fn validate(value: i64) -> Result<RegisterIndex, String> {
         match value {
             0..=23 => Ok(RegisterIndex(value as _)),
@@ -9,7 +10,7 @@ impl RegisterIndex {
         }
     }
 
-    pub fn value(self) -> usize {
+    pub const fn value(self) -> usize {
         self.0
     }
 }

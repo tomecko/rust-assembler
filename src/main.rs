@@ -66,4 +66,14 @@ out 2
 ";
         test_program(EXAMPLE_PROGRAM, &[], &[10, 20, 30]);
     }
+
+    #[test]
+    fn pc_program() {
+        const EXAMPLE_PROGRAM: &str = "
+load 0 14
+load 100 0
+out 0
+";
+        test_program(EXAMPLE_PROGRAM, &[], &[0]);
+    }
 }
