@@ -70,7 +70,7 @@ out 2
     #[test]
     fn pc_program() {
         const EXAMPLE_PROGRAM: &str = "
-load 0 14
+load 2 14
 load 100 0
 out 0
 ";
