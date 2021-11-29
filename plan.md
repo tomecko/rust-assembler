@@ -4,17 +4,20 @@ Trying to work in TDD workflow
 
 ## Machine
 
-* [ ] Finalize (or partially finalize) operations execution (end-to-end execution of some commands)
+* [x] Finalize (or partially finalize) operations execution (end-to-end execution of some commands)
+* [x] `in`/`out` commands implementation
+* [ ] Hermetization cleanup
 * [ ] Stack register
 * [ ] Properly handling PC updating (check jumps)
+* [ ] Execute program from std input
 * [ ] Memory handling
 * [ ] Proper error handling (thiserror/anyhow)
 
 ## Some theory
 
-* [ ] Generics (including generic traits)
+* [x] Generics
 * [ ] Ownership + borrowing model
-* [ ] Lifetimes
+* [x] Lifetimes
 * [ ] Memory model
 
 ## Maybe

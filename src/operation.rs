@@ -1,5 +1,4 @@
 use crate::command::Command;
-use crate::machine::Machine;
 use crate::mnemonic::Mnemonic;
 use crate::register::RegisterIndex;
 
@@ -12,6 +11,8 @@ pub enum Operation {
     Lea(RegisterIndex, i64, RegisterIndex, RegisterIndex),
     Movgz(RegisterIndex, RegisterIndex, RegisterIndex),
     Movz(RegisterIndex, RegisterIndex, RegisterIndex),
+    In(RegisterIndex),
+    Out(RegisterIndex),
 }
 
 impl Operation {
@@ -78,18 +79,14 @@ impl Operation {
                     RegisterIndex::validate(args[2])?,
                 ))
             }
-        }
-    }
-
-    pub fn execute(&self, machine: &mut Machine) {
-        use Operation::*;
-
-        match self {
-            Load(imm, reg) => machine.registers[reg.value()].write(*imm),
-            Mov(from_reg, to_reg) => {
-                machine.registers[to_reg.value()].write(machine.registers[from_reg.value()].read())
+            Mnemonic::In => {
+                Self::check_args_size(&args, 1)?;
+                Ok(Self::In(RegisterIndex::validate(args[0])?))
             }
-            _ => todo!(),
+            Mnemonic::Out => {
+                Self::check_args_size(&args, 1)?;
+                Ok(Self::Out(RegisterIndex::validate(args[0])?))
+            }
         }
     }
 

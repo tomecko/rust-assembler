@@ -8,6 +8,8 @@ pub enum Mnemonic {
     Lea,
     Movgz,
     Movz,
+    In,
+    Out,
 }
 
 impl Mnemonic {
@@ -21,6 +23,8 @@ impl Mnemonic {
             "lea" => Mnemonic::Lea,
             "movgz" => Mnemonic::Movgz,
             "movz" => Mnemonic::Movz,
+            "in" => Mnemonic::In,
+            "out" => Mnemonic::Out,
             _ => return Err(format!("unknown mnemonic {} :(", val)),
         };
         Ok(res)

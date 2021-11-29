@@ -46,6 +46,9 @@ All registers and whole memory is zero-initialized (and stack is empty-initializ
   a value from stack and stores it in memory address pointed by register `17`
   (as `21` is memory register addressed by `17` register)
 
+* `in reg` - Reads value from user to register
+* `out reg` - Outputs value of register to user
+
 * `add reg0 reg1 reg2` - Adds values in `reg0` and `reg1`, and stores the result
   in `reg2`. Eg. `add 16 2 16` offsets address in the `16` register by value
   in register `2`.
