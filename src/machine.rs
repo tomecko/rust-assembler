@@ -102,10 +102,7 @@ where
                     + self.registers[from_reg_2.value()].read();
                 self.registers[to_reg.value()].write(sum)
             }
-            In(reg) => {
-                println!("Waiting for input for register {}", reg.value());
-                self.input(*reg)?
-            }
+            In(reg) => self.input(*reg)?,
             Out(reg) => self.output(*reg)?,
             _ => todo!(),
         }
@@ -114,12 +111,14 @@ where
     }
 
     pub fn input(&mut self, reg: RegisterIndex) -> Result<(), Error> {
+        println!("Waiting for input for register {}:", reg.value());
         let value = self.io.input()?;
         self.registers[reg.value()].write(value);
         Ok(())
     }
 
     pub fn output(&mut self, reg: RegisterIndex) -> Result<(), Error> {
+        println!("Value for register {}:", reg.value());
         self.io.output(self.registers[reg.value()].read())
     }
 }

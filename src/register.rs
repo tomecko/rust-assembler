@@ -2,7 +2,7 @@ use anyhow::Error as AnyError;
 
 use crate::error::Error;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct RegisterIndex(usize);
 
 impl RegisterIndex {

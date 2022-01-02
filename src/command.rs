@@ -3,6 +3,8 @@ use anyhow::Error as AnyError;
 use crate::error::Error;
 use crate::mnemonic::Mnemonic;
 
+const COMMENT_START: &str = "//";
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Command {
     pub mnemonic: Mnemonic,
@@ -11,7 +13,8 @@ pub struct Command {
 
 impl Command {
     pub fn parse(val: &str) -> Result<Self, AnyError> {
-        let mut split_val = val.split_whitespace(); // `impl Iterator<Item = &str>`
+        let val_without_comment = val.split(COMMENT_START).next().ok_or(Error::MissingInput)?;
+        let mut split_val = val_without_comment.split_whitespace(); // `impl Iterator<Item = &str>`
         let mnemonic = Mnemonic::parse(split_val.next().ok_or(Error::MissingMnemonic)?)?;
         let args: Vec<i64> = split_val.map(|x| x.parse()).collect::<Result<_, _>>()?;
 

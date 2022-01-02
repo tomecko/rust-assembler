@@ -5,6 +5,7 @@ use crate::error::Error;
 use crate::mnemonic::Mnemonic;
 use crate::register::RegisterIndex;
 
+#[derive(Debug)]
 pub enum Operation {
     Load(i64, RegisterIndex),
     Mov(RegisterIndex, RegisterIndex),

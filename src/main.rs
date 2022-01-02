@@ -97,4 +97,13 @@ out 0
 ";
         test_program(EXAMPLE_PROGRAM, &[], &[0]);
     }
+
+    #[test]
+    fn comments() {
+        const EXAMPLE_PROGRAM: &str = "
+load 1 0 // comment that will be ignored
+out 0
+";
+        test_program(EXAMPLE_PROGRAM, &[], &[1]);
+    }
 }

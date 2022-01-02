@@ -21,7 +21,7 @@ impl IO for StdIO {
         Ok(input)
     }
     fn output(&mut self, value: i64) -> Result<(), Error> {
-        println!("Output {}", value);
+        println!("{}", value);
         Ok(())
     }
 }
