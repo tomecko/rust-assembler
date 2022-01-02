@@ -1,4 +1,7 @@
+use anyhow::Error as AnyError;
+
 use crate::command::Command;
+use crate::error::Error;
 use crate::mnemonic::Mnemonic;
 use crate::register::RegisterIndex;
 
@@ -16,7 +19,7 @@ pub enum Operation {
 }
 
 impl Operation {
-    pub fn validate(command: Command) -> Result<Self, String> {
+    pub fn validate(command: Command) -> Result<Self, AnyError> {
         let Command { mnemonic, args } = command;
 
         match mnemonic {
@@ -90,15 +93,15 @@ impl Operation {
         }
     }
 
-    fn check_args_size(args: &[i64], expected: usize) -> Result<(), String> {
+    fn check_args_size(args: &[i64], expected: usize) -> Result<(), AnyError> {
         if args.len() == expected {
             Ok(())
         } else {
-            Err(format!(
-                "wrong number of arguments {}, expected: {}",
-                args.len(),
-                expected
-            ))
+            Err(Error::WrongNumberOfArguments {
+                received: args.len(),
+                expected,
+            }
+            .into())
         }
     }
 }

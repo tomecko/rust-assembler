@@ -1,6 +1,10 @@
 #![allow(dead_code)]
 
+use std::fs::File;
+use std::io::Read;
+
 mod command;
+mod error;
 mod io;
 mod machine;
 mod mnemonic;
@@ -8,10 +12,11 @@ mod operation;
 mod register;
 
 use command::Command;
-use io::IO;
+use error::Error;
+use io::{StdIO, IO};
 use machine::Machine;
 
-fn execute<T: IO>(machine: &mut Machine<T>, program: &str) -> Result<(), String> {
+fn execute<T: IO>(machine: &mut Machine<T>, program: &str) -> Result<(), Error> {
     // Vec<Result<Command, String>>
     let commands: Vec<_> = program
         .lines()
@@ -21,7 +26,23 @@ fn execute<T: IO>(machine: &mut Machine<T>, program: &str) -> Result<(), String>
     machine.execute(commands)
 }
 
-fn main() {}
+fn read_program_file() -> Result<String, Error> {
+    let mut file = File::open("programs/example1")?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
+
+fn main() -> Result<(), Error> {
+    let program = read_program_file()?;
+
+    let mut io = StdIO;
+    let mut machine = Machine::new(&mut io);
+
+    execute(&mut machine, &program)?;
+
+    Ok(())
+}
 
 #[cfg(test)]
 mod tests {

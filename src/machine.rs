@@ -1,4 +1,5 @@
 use crate::command::Command;
+use crate::error::Error;
 use crate::io::IO;
 use crate::operation::Operation;
 use crate::register::{GeneralPurposeRegister, Register, RegisterIndex};
@@ -28,7 +29,7 @@ impl<'io, T> Machine<'io, T> {
                 Box::new(GeneralPurposeRegister { value: 0 }),
                 Box::new(GeneralPurposeRegister { value: 0 }),
                 Box::new(GeneralPurposeRegister { value: 0 }),
-                Box::new(GeneralPurposeRegister { value: 0 }), // Program Counterci
+                Box::new(GeneralPurposeRegister { value: 0 }), // Program Counter
             ],
             io,
         }
@@ -43,19 +44,19 @@ impl<'io, T> Machine<'io, T> {
     }
 
     fn is_affecting_pc(operation: &Operation) -> bool {
-      use Operation::*;
-      
-      // below computation can be moved to Operation
-      let affected = match operation {
-        Load(_, reg) => reg,
-        Mov(_, reg) => reg,
-        Add(_, _, reg) => reg,
-        In(reg) => reg,
-        Out(_) => return false,
-        _ => todo!(),
-      };
+        use Operation::*;
 
-      affected.value() == PC_INDEX
+        // below computation can be moved to Operation
+        let affected = match operation {
+            Load(_, reg) => reg,
+            Mov(_, reg) => reg,
+            Add(_, _, reg) => reg,
+            In(reg) => reg,
+            Out(_) => return false,
+            _ => todo!(),
+        };
+
+        affected.value() == PC_INDEX
     }
 }
 
@@ -63,7 +64,7 @@ impl<'io, T> Machine<'io, T>
 where
     T: IO,
 {
-    pub fn execute(&mut self, commands: Vec<Command>) -> Result<(), String>
+    pub fn execute(&mut self, commands: Vec<Command>) -> Result<(), Error>
     where
         T: IO,
     {
@@ -88,7 +89,7 @@ where
         Ok(())
     }
 
-    fn execute_operation(&mut self, operation: &Operation) -> Result<(), String> {
+    fn execute_operation(&mut self, operation: &Operation) -> Result<(), Error> {
         use Operation::*;
 
         match operation {
@@ -101,7 +102,10 @@ where
                     + self.registers[from_reg_2.value()].read();
                 self.registers[to_reg.value()].write(sum)
             }
-            In(reg) => self.input(*reg)?,
+            In(reg) => {
+                println!("Waiting for input for register {}", reg.value());
+                self.input(*reg)?
+            }
             Out(reg) => self.output(*reg)?,
             _ => todo!(),
         }
@@ -109,13 +113,13 @@ where
         Ok(())
     }
 
-    pub fn input(&mut self, reg: RegisterIndex) -> Result<(), String> {
+    pub fn input(&mut self, reg: RegisterIndex) -> Result<(), Error> {
         let value = self.io.input()?;
         self.registers[reg.value()].write(value);
         Ok(())
     }
 
-    pub fn output(&mut self, reg: RegisterIndex) -> Result<(), String> {
+    pub fn output(&mut self, reg: RegisterIndex) -> Result<(), Error> {
         self.io.output(self.registers[reg.value()].read())
     }
 }

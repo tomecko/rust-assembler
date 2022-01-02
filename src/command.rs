@@ -1,3 +1,6 @@
+use anyhow::Error as AnyError;
+
+use crate::error::Error;
 use crate::mnemonic::Mnemonic;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -7,12 +10,10 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn parse(val: &str) -> Result<Self, String> {
+    pub fn parse(val: &str) -> Result<Self, AnyError> {
         let mut split_val = val.split_whitespace(); // `impl Iterator<Item = &str>`
-        let mnemonic = Mnemonic::parse(split_val.next().ok_or("missing mnemonic")?)?;
-        let args: Vec<i64> = split_val
-            .map(|x| x.parse().map_err(|x| format!("unsupported arg {}", x)))
-            .collect::<Result<_, _>>()?;
+        let mnemonic = Mnemonic::parse(split_val.next().ok_or(Error::MissingMnemonic)?)?;
+        let args: Vec<i64> = split_val.map(|x| x.parse()).collect::<Result<_, _>>()?;
 
         Ok(Self { mnemonic, args })
     }

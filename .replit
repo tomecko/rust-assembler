@@ -1,2 +1,2 @@
 language = "rust"
-run = "cargo test"
+run = "cargo run"

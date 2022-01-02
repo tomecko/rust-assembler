@@ -1,12 +1,16 @@
+use anyhow::Error as AnyError;
+
+use crate::error::Error;
+
 #[derive(Clone, Copy)]
 pub struct RegisterIndex(usize);
 
 impl RegisterIndex {
     // this fn can't be const function
-    pub fn validate(value: i64) -> Result<RegisterIndex, String> {
+    pub fn validate(value: i64) -> Result<RegisterIndex, AnyError> {
         match value {
             0..=23 => Ok(RegisterIndex(value as _)),
-            _ => Err(format!("invalue register index: {}", value)),
+            _ => Err(Error::InvalidRegisterIndex(value).into()),
         }
     }
 

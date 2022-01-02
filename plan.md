@@ -9,7 +9,9 @@ Trying to work in TDD workflow
 * [x] Hermetization cleanup
 * [ ] Stack register
 * [x] Properly handling PC updating (check jumps)
-* [ ] Proper error handling (thiserror/anyhow)
+* [x] Proper error handling (thiserror/anyhow)
+* [ ] Read program from stdin
+* [ ] Command line arguments (structopt crate)
 
 ### Instruction processing:
 
