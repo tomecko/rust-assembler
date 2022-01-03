@@ -12,13 +12,16 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn parse(val: &str) -> Result<Self, AnyError> {
+    pub fn parse(val: &str) -> Result<Option<Self>, AnyError> {
         let val_without_comment = val.split(COMMENT_START).next().ok_or(Error::MissingInput)?;
+        if val_without_comment.is_empty() {
+            return Ok(None);
+        }
         let mut split_val = val_without_comment.split_whitespace(); // `impl Iterator<Item = &str>`
         let mnemonic = Mnemonic::parse(split_val.next().ok_or(Error::MissingMnemonic)?)?;
         let args: Vec<i64> = split_val.map(|x| x.parse()).collect::<Result<_, _>>()?;
 
-        Ok(Self { mnemonic, args })
+        Ok(Some(Self { mnemonic, args }))
     }
 }
 
@@ -31,7 +34,10 @@ mod tests {
 
         #[test]
         fn empty_line() {
-            Command::parse("").unwrap_err();
+            assert_eq!(
+                Command::parse("").unwrap(),
+                None
+            );
         }
 
         #[test]
@@ -52,10 +58,10 @@ mod tests {
         fn load_command() {
             assert_eq!(
                 Command::parse("load 1 2").unwrap(),
-                Command {
+                Some(Command {
                     mnemonic: Mnemonic::Load,
                     args: vec![1, 2],
-                }
+                })
             );
         }
     }

@@ -17,11 +17,15 @@ use io::{StdIO, IO};
 use machine::Machine;
 
 fn execute<T: IO>(machine: &mut Machine<T>, program: &str) -> Result<(), Error> {
-    // Vec<Result<Command, String>>
     let commands: Vec<_> = program
         .lines()
         .filter(|x| !x.trim().is_empty())
         .map(Command::parse)
+        .filter_map(|x| match x {
+          Ok(None) => None,
+          Ok(Some(val)) => Some(Ok(val)),
+          Err(val) => Some(Err(val)),
+        })
         .collect::<Result<_, _>>()?;
     machine.execute(commands)
 }
@@ -99,9 +103,19 @@ out 0
     }
 
     #[test]
-    fn comments() {
+    fn comment_at_the_end() {
         const EXAMPLE_PROGRAM: &str = "
 load 1 0 // comment that will be ignored
+out 0
+";
+        test_program(EXAMPLE_PROGRAM, &[], &[1]);
+    }
+
+    #[test]
+    fn comment_full_line() {
+        const EXAMPLE_PROGRAM: &str = "
+load 1 0
+// comment that will be ignored
 out 0
 ";
         test_program(EXAMPLE_PROGRAM, &[], &[1]);
